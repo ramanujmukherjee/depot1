@@ -6,8 +6,12 @@ gem 'rails', '4.0.0.rc2'
 # Use mysql as the database for Active Record
 gem 'mysql2'
 
+gem "activeadmin", github: 'gregbell/active_admin', branch: 'rails4'
+
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0.rc2'
+
+#gem "meta_search", '~> 1.1.3'
 
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
@@ -45,3 +49,15 @@ end
 # gem 'debugger', group: [:development, :test]
 
 gem 'annotate'
+
+
+gem "delayed_job", "~> 4.0.0"
+
+gem "paperclip", "~> 3.0"
+
+gem 'delayed_job_active_record'
+
+gem "kaminari"
+
+
+

@@ -1,0 +1,6 @@
+ActiveAdmin.register Product do
+
+menu :parent => "MainMenu"
+
+
+end

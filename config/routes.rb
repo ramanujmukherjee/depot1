@@ -1,4 +1,16 @@
 Depot1::Application.routes.draw do
+  devise_for :admin_users, ActiveAdmin::Devise.config
+  ActiveAdmin.routes(self)
+  get 'admin' => 'admin#index'
+
+  controller :sessions do
+    get 'login' => :new
+    post 'login' => :create
+    delete 'logout' => :destroy
+  end
+
+  resources :users
+
   resources :orders
 
   resources :line_items
@@ -6,6 +18,7 @@ Depot1::Application.routes.draw do
   resources :carts
 
   get "store/index"
+
   resources :products
 
   # The priority is based upon order of creation: first created -> highest priority.
@@ -13,7 +26,7 @@ Depot1::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # root 'welcome#index'
-  
+
   root :to => 'store#index', :as => 'store'
 
   # Example of regular route:
@@ -50,7 +63,7 @@ Depot1::Application.routes.draw do
   #       get 'recent', on: :collection
   #     end
   #   end
-  
+
   # Example resource route with concerns:
   #   concern :toggleable do
   #     post 'toggle'

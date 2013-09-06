@@ -1,10 +1,18 @@
 class OrdersController < ApplicationController
+  skip_before_filter :authorize, :only => :create
+
   before_action :set_order, only: [:show, :edit, :update, :destroy]
 
   # GET /orders
   # GET /orders.json
   def index
-    @orders = Order.all
+    @orders = Order.paginate :page => params[:page], :order => 'created_at desc', :per_page => 10
+    # @orders = Order.(:order).page params[:page]
+
+    respond_to do |format|
+      format.html
+      format.xml {  render :xml => @orders }
+    end
   end
 
   # GET /orders/1
@@ -14,7 +22,18 @@ class OrdersController < ApplicationController
 
   # GET /orders/new
   def new
+
+    @cart = current_cart
+    if @cart.line_items.empty?
+      redirect_to store_url, :notice => "Your cart is empty"
+      return
+    end
     @order = Order.new
+
+    respond_to do |format|
+      format.html
+      format.xml {  render :xml => @order }
+    end
   end
 
   # GET /orders/1/edit
@@ -25,14 +44,20 @@ class OrdersController < ApplicationController
   # POST /orders.json
   def create
     @order = Order.new(order_params)
+    @order.add_line_items_from_cart(current_cart)
 
     respond_to do |format|
       if @order.save
-        format.html { redirect_to @order, notice: 'Order was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @order }
+        puts "hello"
+        Cart.destroy(session[:cart_id])
+        session[:cart_id] = nil
+        Notifier.order_received(@order).deliver
+        format.html { redirect_to(store_url, :notice => 'Thank you for your order.') }
+        format.xml { render :xml => @order,  :status => :created, :location => @order }
       else
-        format.html { render action: 'new' }
-        format.json { render json: @order.errors, status: :unprocessable_entity }
+        puts "gel"
+        format.html { render :action => 'new' }
+        format.xml { render :xml => @order.errors, :status => :unprocessable_entity }
       end
     end
   end
